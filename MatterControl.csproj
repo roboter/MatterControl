@@ -391,9 +391,8 @@
       <HintPath>packages\Mindscape.Raygun4Net.5.0.0\lib\net40\Mindscape.Raygun4Net4.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>packages\Newtonsoft.Json.6.0.6\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>Submodules\agg-sharp\VectorMath\bin\Debug\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="PdfSharp">
       <HintPath>PdfSharp.dll</HintPath>
@@ -449,6 +448,10 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
+    <ProjectReference Include="PrinterDriverInstaller\InfInstaller.csproj">
+      <Project>{990a9ad3-b6a4-407b-9dfc-9c722af7c9b9}</Project>
+      <Name>InfInstaller</Name>
+    </ProjectReference>
     <ProjectReference Include="Submodules\agg-sharp\clipper_library\clipper_library.csproj">
       <Project>{9B062971-A88E-4A3D-B3C9-12B78D15FA66}</Project>
       <Name>clipper_library</Name>
@@ -548,10 +551,6 @@
     <ProjectReference Include="Submodules\agg-sharp\agg\Agg.csproj">
       <Project>{657DBC6D-C3EA-4398-A3FA-DDB73C14F71B}</Project>
       <Name>Agg</Name>
-    </ProjectReference>
-    <ProjectReference Include="PrinterDriverInstaller\InfInstaller.csproj">
-      <Project>{990A9AD3-B6A4-407B-9DFC-9C722AF7C9B9}</Project>
-      <Name>InfInstaller</Name>
     </ProjectReference>
   </ItemGroup>
 </Project>

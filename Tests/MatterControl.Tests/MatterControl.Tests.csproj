@@ -102,7 +102,7 @@
       <Name>Agg</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Submodules\agg-sharp\examples\GCodeVisualizer\GCodeVisualizer.csproj">
-      <Project>{F67AE800-B0C7-42A8-836F-597B4E74591C}</Project>
+      <Project>{f67ae800-b0c7-42a8-836f-597b4e74591c}</Project>
       <Name>GCodeVisualizer</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Submodules\agg-sharp\GuiAutomation\GuiAutomation.csproj">
@@ -126,7 +126,7 @@
       <Name>PolygonMesh</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Submodules\agg-sharp\Tests\Agg.Tests\Agg.Tests.csproj">
-      <Project>{195CBE56-E654-437B-AB05-3BE1B9452497}</Project>
+      <Project>{195cbe56-e654-437b-ab05-3be1b9452497}</Project>
       <Name>Agg.Tests</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Submodules\agg-sharp\VectorMath\VectorMath.csproj">
