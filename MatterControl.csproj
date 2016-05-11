@@ -409,7 +409,6 @@
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
-    <Reference Include="Mono.Posix" />
     <Reference Include="OpenTK">
       <HintPath>Submodules\agg-sharp\PlatformWin32\OpenTK.dll</HintPath>
     </Reference>
