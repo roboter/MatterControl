@@ -67,7 +67,12 @@ namespace MatterHackers.MatterCad
         public MatterCadGuiWidget()
         {
             rootUnion.Add(new Translate(new BoxPrimitive(10, 10, 20), 5, 10, 5));
-            rootUnion.Add(new BoxPrimitive(8, 20, 10));
+            //rootUnion.Add(new BoxPrimitive(8, 20, 10));
+            //rootUnion.Add(new Cylinder(10, 40));
+            rootUnion.Add(new Translate(new Sphere(radius: 30), 15, 20, 40)); //not implemented
+            //var testUnion = new Translate(new Box(10, 10, 20) - new Box(8, 20, 10), 5, 5, 5); //new Difference(
+            rootUnion.Add(new LinearExtrude(new double[] { 1.1, 2.2, 3.3, 6.3 }, 3));
+            //rootUnion.Add(testUnion);
 
             SuspendLayout();
             verticleSpliter = new Splitter();
@@ -166,7 +171,7 @@ namespace MatterHackers.MatterCad
                 }
 
                 OrthographicZProjection.DrawTo(plateGraphics, meshToRender, lowerLeftInMM + offsetInMM, pixelsPerMm);
-                plateGraphics.DrawString(System.IO.Path.GetFileName(openParams.FileName), (offsetInMM.x + centerInMM.x) * pixelsPerMm, (offsetInMM.y - 10) * pixelsPerMm, 50, Agg.Font.Justification.Center);
+                plateGraphics.DrawString(Path.GetFileName(openParams.FileName), (offsetInMM.x + centerInMM.x) * pixelsPerMm, (offsetInMM.y - 10) * pixelsPerMm, 50, Agg.Font.Justification.Center);
 
                 ImageBuffer logoImage = new ImageBuffer();
                 ImageIO.LoadImageData("Logo.png", logoImage);
@@ -236,7 +241,8 @@ namespace MatterHackers.MatterCad
                 SaveFileDialogParams saveParams = new SaveFileDialogParams("Text files (*.scad)|*.scad");
                 FileDialog.SaveFileDialog(saveParams, (ii) =>
                 {
-                    //   OpenSCadOutput.Save(Utilities.PutOnPlatformAndCenter(rootUnion), ii);
+                    //Utilities.PutOnPlatformAndCenter(rootUnion)
+                    OpenSCadOutput.Save(rootUnion, ii.FileName);
                 });
             }
         }

@@ -5,11 +5,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.50727</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{A20459AD-3006-402C-952C-F4A9D9969A87}</ProjectGuid>
-    <OutputType>WinExe</OutputType>
+    <ProjectGuid>{0B8D6F56-BD7F-4426-B858-D9292B084656}</ProjectGuid>
+    <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>MatterHackers.MatterCadGui</RootNamespace>
-    <AssemblyName>MatterHackers.MatterCADGui</AssemblyName>
+    <RootNamespace>MatterHackers.MHTestPart</RootNamespace>
+    <AssemblyName>MatterHackers.MHTestPart</AssemblyName>
     <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
     <NoStdLib>False</NoStdLib>
     <RegisterForComInterop>False</RegisterForComInterop>
@@ -23,9 +23,6 @@
     <UpgradeBackupLocation>
     </UpgradeBackupLocation>
     <OldToolsVersion>2.0</OldToolsVersion>
-    <IsWebBootstrapper>false</IsWebBootstrapper>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-    <TargetFrameworkProfile />
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -38,6 +35,7 @@
     <MapFileExtensions>true</MapFileExtensions>
     <ApplicationRevision>0</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
@@ -51,7 +49,6 @@
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <PlatformTarget>x86</PlatformTarget>
-    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
@@ -60,22 +57,22 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <PlatformTarget>x86</PlatformTarget>
-    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
-    <Compile Include="CsgEdtors\CsgEditorTranslate.cs" />
-    <Compile Include="CsgEdtors\CsgEditorUnion.cs" />
-    <Compile Include="CsgEdtors\CsgEditorBox.cs" />
-    <Compile Include="MatterCadGui.cs" />
-    <Compile Include="MatterCadGuiWidget.cs" />
-    <Compile Include="CsgEdtors\CsgEditorBase.cs" />
-    <Compile Include="OrthographicZProjection.cs" />
+    <Compile Include="MHTestPart.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="nunit.framework, Version=2.5.3.9345, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\nunit.framework.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
-    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
@@ -95,57 +92,13 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Submodules\agg-sharp\agg\Agg.csproj">
-      <Project>{657DBC6D-C3EA-4398-A3FA-DDB73C14F71B}</Project>
-      <Name>Agg</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Submodules\agg-sharp\Csg\Csg.csproj">
+    <ProjectReference Include="..\..\..\agg-sharp\Csg\Csg.csproj">
       <Project>{7E61A5BD-E78F-4B80-88C9-3821B4FA062E}</Project>
       <Name>Csg</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Submodules\agg-sharp\Gui\Gui.csproj">
-      <Project>{74F6BB6C-9D02-4512-A59A-21940E35C532}</Project>
-      <Name>Gui</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Submodules\agg-sharp\OpenGlGui\OpenGlGui.csproj">
-      <Project>{C958F745-156E-4BDC-A24A-3721C7BE7B8A}</Project>
-      <Name>OpenGlGui</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Submodules\agg-sharp\PlatformAbstract\PlatformAbstract.csproj">
-      <Project>{3E4AABA8-D85F-4922-88C6-5C1B2D2308FB}</Project>
-      <Name>PlatformAbstract</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Submodules\agg-sharp\PlatformWin32\PlatformWin32.csproj">
-      <Project>{670BDDFF-927B-425D-9DD1-22ACB14356EB}</Project>
-      <Name>PlatformWin32</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Submodules\agg-sharp\PolygonMesh\PolygonMesh.csproj">
-      <Project>{86F6AAF2-9B50-40B8-A427-1897D76471C5}</Project>
-      <Name>PolygonMesh</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Submodules\agg-sharp\RenderOpenGl\RenderOpenGl.csproj">
-      <Project>{545B6912-77FF-4B34-BA76-6C3D6A32BE6A}</Project>
-      <Name>RenderOpenGl</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Submodules\agg-sharp\Tesselate\Tesselate.csproj">
-      <Project>{AE37DE1F-22F7-49EE-8732-FC6BC8DC58D9}</Project>
-      <Name>Tesselate</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Submodules\agg-sharp\VectorMath\VectorMath.csproj">
+    <ProjectReference Include="..\..\..\agg-sharp\VectorMath\VectorMath.csproj">
       <Project>{D3E41B4E-BFBB-44CA-94C8-95C00F754FDD}</Project>
       <Name>VectorMath</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Submodules\agg-sharp\WindowsFileDialogs\WindowsFileDialogs.csproj">
-      <Project>{A526DC5D-65F3-461B-805F-D3AC9665F5C9}</Project>
-      <Name>WindowsFileDialogs</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Logo.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="app.config" />
   </ItemGroup>
 </Project>

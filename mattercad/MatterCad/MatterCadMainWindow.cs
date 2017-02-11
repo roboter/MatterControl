@@ -4,14 +4,11 @@ using MatterHackers.Agg.OpenGlGui;
 using MatterHackers.Agg.PlatformAbstract;
 using MatterHackers.Agg.UI;
 using MatterHackers.Agg.VertexSource;
+using MatterHackers.Csg;
 using MatterHackers.Csg.Operations;
 
 using MatterHackers.Csg.Solids;
-using MatterHackers.Csg.Solids;
-
-using MatterHackers.Csg.Transform;
 using MatterHackers.PolygonMesh.Processors;
-using MatterHackers.PolygonMesh.Rendering;
 using MatterHackers.RenderOpenGl;
 using MatterHackers.VectorMath;
 using System;
@@ -25,25 +22,30 @@ namespace MatterCad
         private MatterHackers.PolygonMesh.Mesh meshToRender = null;
 
         private TrackballTumbleWidget trackBallWidget;
-        private Button outputScad;
+      
 
 
-        private GuiWidget objectEditorView;
-        private FlowLayoutWidget objectEditorList;
-
+     
         private Union rootUnion = new Union("root");
 
         public MatterCadMainWindow(bool renderRayTrace) : base(800, 600)
         {
-            rootUnion.Add(new Translate(new BoxPrimitive(10, 10, 20), 5, 10, 5));
-            rootUnion.Add(new BoxPrimitive(8, 20, 10));
+
+           //rootUnion.Add(new Cylinder(radius: 10, height: 20));
+           // var testUnion = new Translate(new Box(10, 10, 20)- new Box(8, 20, 10), 5, 10, 5); //new Difference(
+           // //    testUnion.GetAxisAlignedBoundingBox();
+           // rootUnion.Add(testUnion);
+           
+            var radius = 12;
+            Box OutsideBox = new Box(50, 50, 20);
+            //OutsideBox.BevelEdge(Edge.LeftBack, radius);
+            //OutsideBox.BevelEdge(Edge.LeftFront, radius);
+            //OutsideBox.BevelEdge(Edge.RightBack, radius);
+            //OutsideBox.BevelEdge(Edge.RightFront, radius);
+            rootUnion.Add(OutsideBox);
 
             SuspendLayout();
 
-            // panel 1 stuff
-
-
-            // pannel 2 stuff
             FlowLayoutWidget renderSide = new FlowLayoutWidget(FlowDirection.TopToBottom);
             renderSide.AnchorAll();
 
@@ -51,16 +53,11 @@ namespace MatterCad
             trackBallWidget.DrawGlContent += new EventHandler(glLightedView_DrawGlContent);
             renderSide.AddChild(trackBallWidget);
 
-
-
-
             ResumeLayout();
 
             AnchorAll();
 
             renderSide.AnchorAll();
-
-
 
             trackBallWidget.AnchorAll();
 
@@ -116,13 +113,13 @@ namespace MatterCad
 
         public override void OnParentChanged(EventArgs e)
         {
-            
+
             base.OnParentChanged(e);
         }
 
         private void textSide_BoundsChanged(object sender, EventArgs e)
         {
-            objectEditorView.LocalBounds = new RectangleDouble(0, 0, ((GuiWidget)sender).Width - 10, objectEditorView.Height);
+            //objectEditorView.LocalBounds = new RectangleDouble(0, 0, ((GuiWidget)sender).Width - 10, objectEditorView.Height);
             Invalidate();
         }
 
@@ -159,9 +156,9 @@ namespace MatterCad
                 string text = File.ReadAllText(loadedFileName);
 
                 StreamReader streamReader = new StreamReader(loadedFileName);
-                objectEditorView.Text = streamReader.ReadToEnd();
+    //            objectEditorView.Text = streamReader.ReadToEnd();
                 streamReader.Close();
-                
+
             });
         }
 

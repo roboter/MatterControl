@@ -4,6 +4,6 @@
 [submodule "Submodules/agg-sharp"]
 	path = Submodules/agg-sharp
 	url = https://github.com/MatterHackers/agg-sharp.git
-[submodule "Submodules/net3dbool"]
-	path = Submodules/net3dbool
-	url = https://github.com/Arakis/Net3dBool.git
+[submodule "submodules/net3dbool"]
+	path = submodules/net3dbool
+	url = https://github.com/larsbrubaker/Net3dBool.git

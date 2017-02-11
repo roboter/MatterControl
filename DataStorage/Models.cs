@@ -28,21 +28,17 @@ either expressed or implied, of the FreeBSD Project.
 */
 
 using MatterHackers.Agg.UI;
-using MatterHackers.MatterControl.PrintLibrary.Provider;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading;
-using MatterHackers.VectorMath;
 
 namespace MatterHackers.MatterControl.DataStorage
 {
-	public class ApplicationSession : Entity
+    public class ApplicationSession : Entity
 	{
 		public ApplicationSession()
 			: base()

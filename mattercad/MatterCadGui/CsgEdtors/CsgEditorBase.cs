@@ -15,22 +15,27 @@ namespace MatterHackers.MatterCadGui.CsgEditors
     {
         public static GuiWidget CreateEditorForCsg(CsgObject csgObject)
         {
-            if (csgObject.GetType() == typeof(BoxPrimitive))
-            {
+            return null;
+            //if (csgObject.GetType() == typeof(BoxPrimitive))
+            //{
                 return new CsgEditorBox((BoxPrimitive)csgObject);
-            }
-            else if(csgObject.GetType() == typeof(Union))
-            {
-                return new CsgEditorUnion((Union)csgObject);
-            }
-            else if (csgObject.GetType() == typeof(Translate))
-            {
-                return new CsgEditorTranslate((Translate)csgObject);
-            }
-            else
-            {
-                throw new NotImplementedException();
-            }
+            //}
+            //else if(csgObject.GetType() == typeof(Union))
+            //{
+            //    return new CsgEditorUnion((Union)csgObject);
+            //}
+            //else if (csgObject.GetType() == typeof(Translate))
+            //{
+            //    return new CsgEditorTranslate((Translate)csgObject);
+            //}
+            //else if (csgObject.GetType() == typeof(Cylinder))
+            //{
+            // //   return new CsgEditorCylinder((Cylinder)csgObject);
+            //}
+            //else
+            //{
+            //  //  throw new NotImplementedException();
+            //}
         }
     }
 }
