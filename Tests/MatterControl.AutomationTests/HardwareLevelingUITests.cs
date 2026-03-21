@@ -1,72 +1,90 @@
-﻿using MatterHackers.Agg;
-using MatterHackers.Agg.Image;
-using MatterHackers.Agg.UI;
-using NUnit.Framework;
-using System;
-using System.Linq;
+﻿using System.Threading;
 using System.Threading.Tasks;
-using MatterHackers.GuiAutomation;
-using MatterHackers.Agg.PlatformAbstract;
-using System.IO;
-using MatterHackers.MatterControl.CreatorPlugins;
-using MatterHackers.Agg.UI.Tests;
-using MatterHackers.MatterControl.PrintQueue;
-using MatterHackers.MatterControl.DataStorage;
-using System.Diagnostics;
-using System.Collections.Generic;
-using MatterHackers.MatterControl.UI;
-using MatterHackers.MatterControl.PrintLibrary.Provider;
+using NUnit.Framework;
+using TestInvoker;
 
-
-namespace MatterHackers.MatterControl.UI
+namespace MatterHackers.MatterControl.Tests.Automation
 {
-	[TestFixture, Category("MatterControl.UI"), RunInApplicationDomain]
+	[TestFixture, Category("MatterControl.UI.Automation"), Parallelizable(ParallelScope.Children)]
 	public class HardwareLevelingUITests
 	{
-		[Test, RequiresSTA, RunInApplicationDomain]
-		public void HasHardwareLevelingHidesLevelingSettings()
+		[Test, ChildProcessTest]
+		public async Task HasHardwareLevelingHidesLevelingSettings()
 		{
-			Action<AutomationTesterHarness> testToRun = (AutomationTesterHarness resultsHarness) =>
+			await MatterControlUtilities.RunTest((testRunner) =>
 			{
-				AutomationRunner testRunner = new AutomationRunner(MatterControlUtilities.DefaultTestImages);
+				testRunner.WaitForFirstDraw();
+
+				// Add printer that has hardware leveling
+				testRunner.AddAndSelectPrinter("Airwolf 3D", "HD");
+
+				testRunner.SwitchToPrinterSettings();
+				testRunner.ClickByName("Features SliceSettingsTab");
+				testRunner.ClickByName("Slice Settings Overflow Menu");
+				testRunner.ClickByName("Advanced Menu Item");
+				Assert.IsFalse(testRunner.WaitForName("print_leveling_solution Row", .5), "Print leveling should not exist for an Airwolf HD");
+
+				// Add printer that does not have hardware leveling
+				testRunner.AddAndSelectPrinter("3D Factory", "MendelMax 1.5");
+
+				testRunner.SwitchToPrinterSettings();
+				testRunner.ClickByName("Features SliceSettingsTab");
+				testRunner.ClickByName("Slice Settings Overflow Menu");
+				testRunner.ClickByName("Advanced Menu Item");
+				Assert.IsTrue(testRunner.WaitForName("print_leveling_solution Row"), "Print leveling should exist for a 3D Factory MendelMax");
+
+				return Task.CompletedTask;
+			}, overrideHeight: 800);
+		}
+
+		// NOTE: This test once failed, due to timing probably.
+		[Test, ChildProcessTest, Category("Emulator")]
+		public async Task SoftwareLevelingTest()
+		{
+			await MatterControlUtilities.RunTest((testRunner) =>
+			{
+				// make a jump start printer
+				using (var emulator = testRunner.LaunchAndConnectToPrinterEmulator("JumpStart", "V1", runSlow: false))
 				{
-					//Add printer that has hardware leveling
-					MatterControlUtilities.SelectAndAddPrinter(testRunner, "Airwolf 3D", "HD", true);
+					// make sure it is showing the correct button
+					testRunner.OpenPrintPopupMenu();
 
-					testRunner.Wait(1);
-					testRunner.ClickByName("SettingsAndControls");
-					testRunner.Wait(1);
-					testRunner.ClickByName("Slice Settings Tab");
-					testRunner.Wait(1);
-					testRunner.ClickByName("User Level Dropdown");
-					testRunner.Wait(1);
-					testRunner.ClickByName("Advanced Menu Item");
-					testRunner.Wait(1);
-					testRunner.ClickByName("Printer Tab");
-					testRunner.Wait(1);
+					var startPrintButton = testRunner.GetWidgetByName("Start Print Button", out _);
 
-					//Make sure Print Leveling tab is not visible 
-					bool testPrintLeveling = testRunner.WaitForName("Print Leveling Tab", 3);
-					resultsHarness.AddTestResult(testPrintLeveling == false);
+					Assert.IsFalse(startPrintButton.Enabled, "Start Print should not be enabled");
 
-					//Add printer that does not have hardware leveling
-					MatterControlUtilities.SelectAndAddPrinter(testRunner, "Deezmaker", "Bukito", false);
-					testRunner.ClickByName("Slice Settings Tab");
-					testRunner.Wait(1);
-					testRunner.ClickByName("Printer Tab");
+					testRunner.ClickByName("SetupPrinter");
 
-					//Make sure Print Leveling tab is visible
-					bool printLevelingVisible = testRunner.WaitForName("Print Leveling Tab", 2);
-					resultsHarness.AddTestResult(printLevelingVisible == true);
+					testRunner.Complete9StepLeveling();
 
-					MatterControlUtilities.CloseMatterControl(testRunner);
+					// Satisfy non-empty bed requirement
+					testRunner.AddItemToBed();
+
+					testRunner.OpenPrintPopupMenu();
+
+					// make sure the button has changed to start print
+					startPrintButton = testRunner.GetWidgetByName("Start Print Button", out _);
+					Assert.IsTrue(startPrintButton.Enabled, "Start Print should be enabled after running printer setup");
+					Assert.IsFalse(testRunner.WaitForName("SetupPrinter", .5), "Finish Setup should not be visible after leveling the printer");
+
+					// reset to defaults and make sure print leveling is cleared
+					testRunner.SwitchToSliceSettings();
+
+					testRunner.WaitForReloadAll(() =>
+					{
+						testRunner.ClickByName("Printer Overflow Menu");
+						testRunner.ClickByName("Reset to Defaults... Menu Item");
+						testRunner.ClickByName("Yes Button");
+					});
+
+					testRunner.OpenPrintPopupMenu();
+
+					// make sure it is showing the correct button
+					Assert.IsTrue(testRunner.WaitForName("SetupPrinter"), "Setup... should be visible after reset to Defaults");
 				}
-			};
 
-			AutomationTesterHarness testHarness = MatterControlUtilities.RunTest(testToRun);
-
-			Assert.IsTrue(testHarness.AllTestsPassed);
-			Assert.IsTrue(testHarness.TestCount == 2); // make sure we ran all our tests
+				return Task.CompletedTask;
+			}, maxTimeToRun: 90); // NOTE: This test got stuck in ClickByName("Yes Button") -> WaitforDraw. It appears to be because WaitforDraw waited for a closed window to redraw itself.
 		}
 	}
 }

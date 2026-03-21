@@ -4,7 +4,8 @@
 
 # mstest test results
 TestResults
-Tests/temp
+Tests/temp/
+Tests/TestData/ExportedGcode/
 
 StaticData/Translations/L10N/
 
@@ -15,6 +16,8 @@ StaticData/Translations/L10N/
 *.suo
 *.user
 *.sln.docstates
+
+node_modules/
 
 # Build results
 [Dd]ebug/
@@ -75,6 +78,9 @@ DocProject/Help/*.hhp
 DocProject/Help/Html2
 DocProject/Help/html
 
+# Ignore Android plugin binaries
+StaticData/Plugins/
+
 # Click-Once directory
 publish
 
@@ -112,3 +118,7 @@ UpgradeLog*.XML
 MatterControl.userprefs
 
 .vs/
+
+# JetBrains Rider user configuration directory
+/.idea/
+/MainOutputDirectory.cs

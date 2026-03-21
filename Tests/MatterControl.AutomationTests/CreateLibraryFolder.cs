@@ -27,56 +27,40 @@ of the authors and should not be interpreted as representing official policies,
 either expressed or implied, of the FreeBSD Project.
 */
 
-using MatterHackers.Agg;
-using MatterHackers.Agg.Image;
 using MatterHackers.Agg.UI;
 using NUnit.Framework;
-using System;
 using System.Threading.Tasks;
-using MatterHackers.GuiAutomation;
-using MatterHackers.Agg.PlatformAbstract;
-using System.IO;
-using MatterHackers.Agg.UI.Tests;
+using TestInvoker;
 
-namespace MatterHackers.MatterControl.UI
+namespace MatterHackers.MatterControl.Tests.Automation
 {
-	[TestFixture, Category("MatterControl.UI"), RunInApplicationDomain]
-	public class CreateLibraryFolder
-	{
-		[Test, RequiresSTA, RunInApplicationDomain]
-		public void CreateFolderStarsOutWithTextFiledFocusedAndEditable()
-		{
-			// Run a copy of MatterControl
-			Action<AutomationTesterHarness> testToRun = (AutomationTesterHarness resultsHarness) =>
-			{
-				AutomationRunner testRunner = new AutomationRunner(MatterControlUtilities.DefaultTestImages);
+    [TestFixture, Category("MatterControl.UI.Automation")]
+    public class CreateLibraryFolder
+    {
+        [Test, ChildProcessTest]
+        public async Task CreateFolderStartsWithTextFieldFocusedAndEditable()
+        {
+            await MatterControlUtilities.RunTest((testRunner) =>
+            {
+                testRunner.OpenPartTab();
 
-				// Now do the actions specific to this test. (replace this for new tests)
-				{
-					testRunner.ClickByName("Library Tab");
-					MatterControlUtilities.NavigateToFolder(testRunner, "Local Library Row Item Collection");
-					testRunner.ClickByName("Create Folder From Library Button");
+                testRunner.NavigateToFolder("Local Library Row Item Collection");
+                testRunner.InvokeLibraryCreateFolderDialog();
 
-					testRunner.Wait(.5);
-					testRunner.Type("Test Text");
-					testRunner.Wait(.5);
+                testRunner.Delay(.5);
+                testRunner.Type("Test Text");
+                testRunner.Delay(.5);
 
-					SystemWindow containingWindow;
-					GuiWidget textInputWidget = testRunner.GetWidgetByName("Create Folder - Text Input", out containingWindow);
-					MHTextEditWidget textWidgetMH = textInputWidget as MHTextEditWidget;
-					resultsHarness.AddTestResult(textWidgetMH != null, "Found Text Widget");
-					resultsHarness.AddTestResult(textWidgetMH.Text == "Test Text", "Had the right text");
-					containingWindow.CloseOnIdle();
-					testRunner.Wait(.5);
+                var textWidgetMH = testRunner.GetWidgetByName("InputBoxPage TextEditWidget", out _) as ThemedTextEditWidget;
 
-					MatterControlUtilities.CloseMatterControl(testRunner);
-				}
-			};
+                Assert.IsTrue(textWidgetMH != null, "Found Text Widget");
+                Assert.IsTrue(textWidgetMH.Text == "Test Text", "Had the right text");
 
-			AutomationTesterHarness testHarness = MatterControlUtilities.RunTest(testToRun);
+                testRunner.ClickByName("Cancel Wizard Button");
+                testRunner.Delay(.5);
 
-			Assert.IsTrue(testHarness.AllTestsPassed);
-			Assert.IsTrue(testHarness.TestCount == 2); // make sure we ran all our tests
-		}
-	}
+                return Task.CompletedTask;
+            });
+        }
+    }
 }

@@ -1,8 +1,9 @@
-﻿using MatterHackers.Agg;
-using System;
+﻿using System;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Threading;
 
 namespace MatterHackers.InfInstaller
 {
@@ -25,7 +26,7 @@ namespace MatterHackers.InfInstaller
 		{
 			Process driverInstallerProcess = new Process();
 
-			driverInstallerProcess.StartInfo.Arguments = "-a {0}".FormatWith(Path.GetFullPath(pathAndDriverToInstall));
+			driverInstallerProcess.StartInfo.Arguments = string.Format("-a \"{0}\"", Path.GetFullPath(pathAndDriverToInstall));
 
 			driverInstallerProcess.StartInfo.CreateNoWindow = true;
 			driverInstallerProcess.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
@@ -48,10 +49,9 @@ namespace MatterHackers.InfInstaller
 
 			driverInstallerProcess.StartInfo.FileName = pnPUtilPathAndFileName;
 			driverInstallerProcess.StartInfo.Verb = "runas";
-			driverInstallerProcess.StartInfo.UseShellExecute = true;
+			driverInstallerProcess.StartInfo.UseShellExecute = false;
 
 			driverInstallerProcess.Start();
-
 			driverInstallerProcess.WaitForExit();
 
 			if (!fileExists)
@@ -65,6 +65,14 @@ namespace MatterHackers.InfInstaller
 		[STAThread]
 		public static void Main(string[] args)
 		{
+			// this sets the global culture for the app and all new threads
+			CultureInfo.DefaultThreadCurrentCulture = CultureInfo.InvariantCulture;
+			CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.InvariantCulture;
+
+			// and make sure the app is set correctly
+			Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
+			Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
+
 			if (args.Length > 0 && File.Exists(args[0]))
 			{
 				InfInstallerApp driverInstaller = new InfInstallerApp();

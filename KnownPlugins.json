@@ -1,0 +1,10 @@
+[
+  {
+    "Name": "MatterControl Cloud Services",
+    "TypeName": "MatterHackers.MatterControl.Plugins.CloudServices.CloudServicesPlugin"
+  },
+  {
+    "Name": "Firmware Updater",
+    "TypeName": "MatterHackers.MatterControl.Plugins.MarlinFirmwareUpdatePlugin.MarlinFirmwareUpdatePlugin"
+  }
+]

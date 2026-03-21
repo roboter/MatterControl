@@ -27,9 +27,13 @@ of the authors and should not be interpreted as representing official policies,
 either expressed or implied, of the FreeBSD Project.
 */
 
+using System;
+using System.IO;
+using System.Reflection;
 using MatterHackers.Agg;
 using MatterHackers.Agg.Image;
 using MatterHackers.Agg.UI;
+using MatterHackers.MatterControl.Tests.Automation;
 using NUnit.Framework;
 
 namespace MatterHackers.MatterControl.UI
@@ -45,6 +49,8 @@ namespace MatterHackers.MatterControl.UI
 		[Test]
 		public void TopToBottomContainerAppliesExpectedMarginToToggleView()
 		{
+			TestContext.CurrentContext.SetCompatibleWorkingDirectory();
+
 			int marginSize = 40;
 			int dimensions = 300;
 
@@ -52,16 +58,16 @@ namespace MatterHackers.MatterControl.UI
 
 			FlowLayoutWidget topToBottomContainer = new FlowLayoutWidget(FlowDirection.TopToBottom)
 			{
-				HAnchor = HAnchor.ParentLeftRight,
-				VAnchor = VAnchor.ParentBottomTop,
+				HAnchor = HAnchor.Stretch,
+				VAnchor = VAnchor.Stretch,
 			};
 			outerContainer.AddChild(topToBottomContainer);
 
 			CheckBox toggleBox = new CheckBox("test");
-			toggleBox.HAnchor = HAnchor.ParentLeftRight;
-			toggleBox.VAnchor = VAnchor.ParentBottomTop;
+			toggleBox.HAnchor = HAnchor.Stretch;
+			toggleBox.VAnchor = VAnchor.Stretch;
 			toggleBox.Margin = new BorderDouble(marginSize);
-			toggleBox.BackgroundColor = RGBA_Bytes.Red;
+			toggleBox.BackgroundColor = Color.Red;
 			toggleBox.DebugShowBounds = true;
 
 			topToBottomContainer.AddChild(toggleBox);
@@ -69,7 +75,7 @@ namespace MatterHackers.MatterControl.UI
 			topToBottomContainer.PerformLayout();
 
 			outerContainer.DoubleBuffer = true;
-			outerContainer.BackBuffer.NewGraphics2D().Clear(RGBA_Bytes.White);
+			outerContainer.BackBuffer.NewGraphics2D().Clear(Color.White);
 			outerContainer.OnDraw(outerContainer.NewGraphics2D());
 
 			// For troubleshooting or visual validation

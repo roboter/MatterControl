@@ -1,0 +1,92 @@
+{
+  "DefaultFontSize": 11,
+  "TextColor": "#839496",
+  "PresetColors": {
+    "MaterialPreset": "#FF7F00",
+    "QualityPreset": "#FFFF00",
+    "UserOverride": "#445FDC96"
+  },
+  "IsDarkTheme": true,
+  "SlightShade": "#00000028",
+  "MinimalShade": "#0000000F",
+  "Shade": "#00000078",
+  "DarkShade": "#000000BE",
+  "BackgroundColor": "#002B36",
+  "TabBarBackground": "#001A20",
+  "InactiveTabColor": "#073642",
+  "InteractionLayerOverlayColor": "#002B36F0",
+  "SplitterBackground": "#073642",
+  "TabBodyBackground": "#00000000",
+  "ToolbarButtonBackground": "#00000000",
+  "ThumbnailBackground": "#00000000",
+  "AccentMimimalOverlay": "#B5890050",
+  "EditFieldColors": {
+    "Focused": {
+      "BackgroundColor": "#839496",
+      "ForegroundColor": "#00000000",
+      "BorderColor": "#00000000",
+      "TextColor": "#073642",
+      "LightTextColor": "#385c5c"
+    },
+    "Hovered": {
+      "BackgroundColor": "#586E75",
+      "ForegroundColor": "#00000000",
+      "BorderColor": "#00000000",
+      "TextColor": "#00000000"
+    },
+    "Inactive": {
+      "BackgroundColor": "#073642",
+      "ForegroundColor": "#00000000",
+      "BorderColor": "#00000000",
+      "TextColor": "#839496",
+      "LightTextColor": "#36575e"
+    }
+  },
+  "BedColor": "#666",
+  "UnderBedColor": "#EEE5",
+  "PrinterBedTextColor": "#1a1a1a",
+  "HotendLimitsBackgroundColor": "#00000050",
+  "BedGridColors": {
+    "Red": "#E10000",
+    "Green": "#37BA00",
+    "Blue": "#0026FF",
+    "Line": "#444"
+  },
+  "LightTextColor": "#00000000",
+  "BorderColor": "#839496",
+  "BorderColor40": "#094453",
+  "BorderColor20": "#073642",
+  "PopupBorderColor": "#001F28",
+  "RowBorder": "#00303D",
+  "DropList": {
+    "Open": {
+      "BackgroundColor": "#282828",
+      "ForegroundColor": "#00000000",
+      "BorderColor": "#00000000",
+      "TextColor": "#839496"
+    },
+    "Focused": {
+      "BackgroundColor": "#839496",
+      "ForegroundColor": "#00000000",
+      "BorderColor": "#00000000",
+      "TextColor": "#073642"
+    },
+    "Hovered": {
+      "BackgroundColor": "#586E75",
+      "ForegroundColor": "#00000000",
+      "BorderColor": "#00000000",
+      "TextColor": "#00000000"
+    },
+    "Inactive": {
+      "BackgroundColor": "#073642",
+      "ForegroundColor": "#00000000",
+      "BorderColor": "#00000000",
+      "TextColor": "#839496"
+    }
+  },
+  "DisabledColor": "#24464F",
+  "SplashAccentColor": "#EEEEEE",
+  "BedBackgroundColor": "#002731",
+  "PrimaryAccentColor": "#B58900",
+  "SectionBackgroundColor": "#002630"
+}

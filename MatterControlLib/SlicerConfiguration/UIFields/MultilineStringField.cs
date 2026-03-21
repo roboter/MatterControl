@@ -1,0 +1,107 @@
+﻿/*
+Copyright (c) 2017, Lars Brubaker, John Lewin
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this
+   list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright notice,
+   this list of conditions and the following disclaimer in the documentation
+   and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+The views and conclusions contained in the software and documentation are those
+of the authors and should not be interpreted as representing official policies,
+either expressed or implied, of the FreeBSD Project.
+*/
+
+using System;
+using MatterHackers.Agg.UI;
+
+namespace MatterHackers.MatterControl.SlicerConfiguration
+{
+	public class MultilineStringField : UIField
+	{
+		private ThemedTextEditWidget editWidget;
+
+		public bool SetValueOnEveryEdit { get; }
+
+		private ThemeConfig theme;
+
+		/// <summary>
+		/// The constructor of a Multiline String Field
+		/// </summary>
+		/// <param name="theme">The theme to use</param>
+		/// <param name="setValueOnEveryEdit">Sets if SetValue gets called with every keystroke or only after EditComplete.</param>
+		public MultilineStringField(ThemeConfig theme, bool setValueOnEveryEdit = false)
+		{
+            this.SetValueOnEveryEdit = setValueOnEveryEdit;
+            this.theme = theme;
+		}
+
+		public override void Initialize(ref int tabIndex)
+		{
+			editWidget = new ThemedTextEditWidget("", theme, pixelWidth: 320, multiLine: true, tabIndex: tabIndex, typeFace: ApplicationController.Instance.GetTypeFace("Liberation_Mono"))
+			{
+				HAnchor = HAnchor.Stretch,
+				VAnchor = VAnchor.Fit,
+				Name = this.Name
+			};
+			editWidget.DrawFromHintedCache();
+			if (SetValueOnEveryEdit)
+			{
+                editWidget.ActualTextEditWidget.TextChanged += (sender, e) =>
+                {
+                    if (sender is TextEditWidget textEditWidget)
+                    {
+                        this.SetValue(
+                            textEditWidget.Text.Replace("\n", "\\n"),
+                            userInitiated: true);
+                    }
+                };
+            }
+            else
+			{
+				editWidget.ActualTextEditWidget.EditComplete += (sender, e) =>
+				{
+					if (sender is TextEditWidget textEditWidget)
+					{
+						this.SetValue(
+							textEditWidget.Text.Replace("\n", "\\n"),
+							userInitiated: true);
+					}
+				};
+			}
+
+			editWidget.ActualTextEditWidget.TextChanged += (s, e) =>
+			{
+				UiThread.RunOnIdle(() =>
+				{
+					editWidget.ActualTextEditWidget.Height = Math.Min(editWidget.ActualTextEditWidget.Printer.LocalBounds.Height, 500);
+				});
+			};
+
+			this.Content = editWidget;
+		}
+
+		protected override void OnValueChanged(FieldChangedEventArgs fieldChangedEventArgs)
+		{
+			editWidget.Text = this.Value.Replace("\\n", "\n");
+			editWidget.ActualTextEditWidget.Height = Math.Min(editWidget.ActualTextEditWidget.Printer.LocalBounds.Height, 500);
+
+			base.OnValueChanged(fieldChangedEventArgs);
+		}
+	}
+}

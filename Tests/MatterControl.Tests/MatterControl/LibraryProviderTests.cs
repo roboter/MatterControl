@@ -37,31 +37,36 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Threading;
+using MatterHackers.MatterControl.Tests.Automation;
+using MatterHackers.Agg;
+using MatterHackers.GuiAutomation;
 
 namespace MatterControl.Tests
 {
 	[TestFixture]
 	public class LibraryProviderTests
 	{
-		private bool dataReloaded = false;
-		private string meshFileName = "Box20x20x10.stl";
-		private string meshPathAndFileName;
-		private string pathToMesh = Path.Combine("..", "..", "..", "TestData", "TestMeshes", "LibraryProviderData");
-
 		public LibraryProviderTests()
 		{
-			#if !__ANDROID__
+#if !__ANDROID__
 			// Set the static data to point to the directory of MatterControl
-			StaticData.Instance = new MatterHackers.Agg.FileSystemStaticData(Path.Combine("..", "..", "..", "..", "StaticData"));
-			#endif
+			StaticData.Instance = new FileSystemStaticData(TestContext.CurrentContext.ResolveProjectPath(4, "StaticData"));
+#endif
 		}
 
-		private event EventHandler unregisterEvents;
-
+		// Timing issues make this test too unstable to run. The DataReloaded event frequently resets the 
+		// dataReloaded variable right after being set to false, resulting in a test failure where dataReloaded is
+		// asserted to be false but is not. It repros best via command line but does fail in Visual Studio on release
+		// builds if you run it enough times
 		[Test]
 		public void LibraryProviderFileSystem_NavigationWorking()
 		{
-			StaticData.Instance = new MatterHackers.Agg.FileSystemStaticData(Path.Combine("..", "..", "..", "..", "StaticData"));
+			StaticData.Instance = new FileSystemStaticData(TestContext.CurrentContext.ResolveProjectPath(4, "StaticData"));
+			MatterControlUtilities.OverrideAppDataLocation(TestContext.CurrentContext.ResolveProjectPath(4));
+
+			string meshFileName = "Box20x20x10.stl";
+			string meshPathAndFileName = TestContext.CurrentContext.ResolveProjectPath(5, "MatterControl", "Tests", "TestData", "TestMeshes", "LibraryProviderData", meshFileName);
+			int dataReloadedCount = 0;
 
 			string downloadsDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads");
 			string testLibraryDirectory = Path.Combine(downloadsDirectory, "LibraryProviderFileSystemTest");
@@ -73,60 +78,66 @@ namespace MatterControl.Tests
 			Directory.CreateDirectory(testLibraryDirectory);
 
 			LibraryProviderFileSystem testProvider = new LibraryProviderFileSystem(testLibraryDirectory, "TestPath", null, null);
-			testProvider.DataReloaded += (sender, e) => { dataReloaded = true; };
+			testProvider.DataReloaded += (s, e) => { dataReloadedCount++; };
+
+			AutomationRunner.StaticDelay(() => { return dataReloadedCount > 0; }, 1);
+			dataReloadedCount = 0;
 
 			Assert.IsTrue(testProvider.CollectionCount == 0, "Start with a new database for these tests.");
 			Assert.IsTrue(testProvider.ItemCount == 0, "Start with a new database for these tests.");
 
 			// create a collection and make sure it is on disk
-			dataReloaded = false; // it has been loaded for the default set of parts
+			Assert.AreEqual(0, dataReloadedCount); // it has been loaded for the default set of parts
+
 			string collectionName = "Collection1";
 			string createdDirectory = Path.Combine(testLibraryDirectory, collectionName);
-			Assert.IsTrue(!Directory.Exists(createdDirectory));
-			Assert.IsTrue(dataReloaded == false);
+
+			Assert.IsFalse(Directory.Exists(createdDirectory), "CreatedDirectory should *not* exist");
+			Assert.AreEqual(0, dataReloadedCount, "Reload should *not* have occurred");
+
 			testProvider.AddCollectionToLibrary(collectionName);
-			Thread.Sleep(500); // wait for the add to finish
-			Assert.IsTrue(testProvider.CollectionCount == 1);
-			Assert.IsTrue(dataReloaded == true);
-			Assert.IsTrue(Directory.Exists(createdDirectory));
+			AutomationRunner.StaticDelay(() => { return testProvider.CollectionCount == 1; }, 1);
+
+			Assert.AreEqual(1, testProvider.CollectionCount, "Incorrect collection count");
+			Assert.IsTrue(dataReloadedCount > 0, "Reload should *have* occurred");
+			Assert.IsTrue(Directory.Exists(createdDirectory), "CreatedDirectory *should* exist");
 
 			// add an item works correctly
 			LibraryProvider subProvider = testProvider.GetProviderForCollection(testProvider.GetCollectionItem(0));
-			subProvider.DataReloaded += (sender, e) => { dataReloaded = true; };
-			dataReloaded = false;
-			//itemAdded = false;
+			subProvider.DataReloaded += (sender, e) => { dataReloadedCount++; };
+			dataReloadedCount = 0;
 			string subPathAndFile = Path.Combine(createdDirectory, meshFileName);
-			Assert.IsTrue(!File.Exists(subPathAndFile));
-			Assert.IsTrue(dataReloaded == false);
-			//Assert.IsTrue(itemAdded == false);
+			Assert.IsFalse(File.Exists(subPathAndFile), "File should *not* exist: " + subPathAndFile);
+			Assert.AreEqual(0, dataReloadedCount, "Reload should *not* have occurred");
 
-			// WIP: saving the name incorectly for this location (does not need to be changed).
-			subProvider.AddFilesToLibrary(new string[] { meshPathAndFileName });
-			Thread.Sleep(3000); // wait for the add to finish
+			// WIP: saving the name incorrectly for this location (does not need to be changed).
+			//subProvider.AddFilesToLibrary(new string[] { meshPathAndFileName });
+			throw new NotImplementedException("subProvider.AddFilesToLibrary(new string[] { meshPathAndFileName });");
+
+			AutomationRunner.StaticDelay(() => { return subProvider.ItemCount == 1; }, 1);
 
 			PrintItemWrapper itemAtRoot = subProvider.GetPrintItemWrapperAsync(0).Result;
 
 			Assert.IsTrue(subProvider.ItemCount == 1);
-			Assert.IsTrue(dataReloaded == true);
+			Assert.IsTrue(dataReloadedCount > 0);
 			//Assert.IsTrue(itemAdded == true);
 			Assert.IsTrue(File.Exists(subPathAndFile));
 
-			// make sure the provider locator is correct
+			// make sure the provider locater is correct
 
 			// remove item works
-			dataReloaded = false;
-			Assert.IsTrue(dataReloaded == false);
+			dataReloadedCount = 0;
+			Assert.IsTrue(dataReloadedCount == 0);
 			subProvider.RemoveItem(0);
-			Thread.Sleep(500); // wait for the remove to finish
-			Assert.IsTrue(dataReloaded == true);
+			AutomationRunner.StaticDelay(() => { return subProvider.ItemCount == 0; }, 1);
+			Assert.IsTrue(dataReloadedCount > 0);
 			Assert.IsTrue(!File.Exists(subPathAndFile));
 
 			// remove collection gets rid of it
-			dataReloaded = false;
-			Assert.IsTrue(dataReloaded == false);
+			dataReloadedCount = 0;
 			testProvider.RemoveCollection(0);
-			Thread.Sleep(500); // wait for the remove to finish
-			Assert.IsTrue(dataReloaded == true);
+			AutomationRunner.StaticDelay(() => { return testProvider.CollectionCount == 0; }, 1);
+			Assert.IsTrue(dataReloadedCount > 0);
 			Assert.IsTrue(testProvider.CollectionCount == 0);
 			Assert.IsTrue(!Directory.Exists(createdDirectory));
 
@@ -136,41 +147,10 @@ namespace MatterControl.Tests
 			}
 		}
 
-		[SetUp]
-		public void SetupBeforeTest()
-		{
-			meshPathAndFileName = Path.Combine(pathToMesh, meshFileName);
-
-			dataReloaded = false;
-		}
-
-		[TearDown]
-		public void TeardownAfterTest()
-		{
-			if (unregisterEvents != null)
-			{
-				unregisterEvents(this, null);
-			}
-		}
-
 		private bool NamedCollectionExists(string nameToLookFor)
 		{
 			string query = string.Format("SELECT * FROM PrintItemCollection WHERE Name = '{0}' ORDER BY Name ASC;", nameToLookFor);
 			foreach (PrintItemCollection collection in Datastore.Instance.dbSQLite.Query<PrintItemCollection>(query))
-			{
-				if (collection.Name == nameToLookFor)
-				{
-					return true;
-				}
-			}
-
-			return false;
-		}
-
-		private bool NamedItemExists(string nameToLookFor)
-		{
-			string query = string.Format("SELECT * FROM PrintItem WHERE Name = '{0}' ORDER BY Name ASC;", nameToLookFor);
-			foreach (PrintItem collection in Datastore.Instance.dbSQLite.Query<PrintItem>(query))
 			{
 				if (collection.Name == nameToLookFor)
 				{

@@ -27,51 +27,37 @@ of the authors and should not be interpreted as representing official policies,
 either expressed or implied, of the FreeBSD Project.
 */
 
-using MatterHackers.Agg.PlatformAbstract;
-using MatterHackers.Agg.UI;
 using MatterHackers.MatterControl.DataStorage;
-using MatterHackers.MatterControl.PrintLibrary.Provider;
-using MatterHackers.MatterControl.PrintQueue;
-using MatterHackers.MatterControl.UI;
+using MatterHackers.MatterControl.Tests.Automation;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Threading;
 
-namespace MatterControl.Tests
+namespace MatterHackers.MatterControl.Tests
 {
 	[TestFixture, RunInApplicationDomain]
 	public class LibraryProviderSqliteTests
 	{
 		private bool dataReloaded = false;
-		private string meshFileName = "Box20x20x10.stl";
-		private string meshPathAndFileName;
-		private string pathToMesh = Path.Combine("..", "..", "..", "TestData", "TestMeshes", "LibraryProviderData");
+		private string meshPathAndFileName = TestContext.CurrentContext.ResolveProjectPath(4, "Tests", "TestData", "TestMeshes", "LibraryProviderData", "Box20x20x10.stl");
 
-		public LibraryProviderSqliteTests()
+		[SetUp]
+		public void SetupBeforeTest()
 		{
-			#if !__ANDROID__
-			// Set the static data to point to the directory of MatterControl
-			StaticData.Instance = new MatterHackers.Agg.FileSystemStaticData(Path.Combine("..", "..", "..", "..", "StaticData"));
-			#endif
+			dataReloaded = false;
 		}
 
-		private event EventHandler unregisterEvents;
-
 #if !__ANDROID__
-		[Test, RunInApplicationDomain]
+		[Test]
 		public void LibraryProviderSqlite_NavigationWorking()
 		{
-			MatterControlUtilities.OverrideAppDataLocation();
+			StaticData.Instance = new FileSystemStaticData(TestContext.CurrentContext.ResolveProjectPath(4, "StaticData"));
+			MatterControlUtilities.OverrideAppDataLocation(TestContext.CurrentContext.ResolveProjectPath(4));
 
 			LibraryProviderSQLite testProvider = new LibraryProviderSQLite(null, null, null, "Local Library");
 			testProvider.DataReloaded += (sender, e) => { dataReloaded = true; };
 			Thread.Sleep(3000); // wait for the library to finish initializing
 			UiThread.InvokePendingActions();
-			Assert.IsTrue(testProvider.CollectionCount == 0, "Start with a new database for these tests.");
-			Assert.IsTrue(testProvider.ItemCount == 3, "Start with a new database for these tests.");
+			Assert.AreEqual(0, testProvider.CollectionCount, "Start with a new database for these tests.");
+			Assert.AreEqual(3, testProvider.ItemCount, "Start with a new database for these tests.");
 
 			// create a collection and make sure it is on disk
 			dataReloaded = false; // it has been loaded for the default set of parts
@@ -90,7 +76,9 @@ namespace MatterControl.Tests
 			Assert.IsTrue(!NamedItemExists(collectionName));
 			Assert.IsTrue(dataReloaded == false);
 
-			testProvider.AddFilesToLibrary(new string[] { meshPathAndFileName });
+			//testProvider.AddFilesToLibrary(new string[] { meshPathAndFileName });
+			throw new NotImplementedException("testProvider.AddFilesToLibrary(new string[] { meshPathAndFileName });");
+
 			Thread.Sleep(3000); // wait for the add to finish
 			UiThread.InvokePendingActions();
 
@@ -119,23 +107,6 @@ namespace MatterControl.Tests
 			//MatterControlUtilities.RestoreStaticDataAfterTesting(staticDataState, true);
 		}
 #endif
-
-		[SetUp]
-		public void SetupBeforeTest()
-		{
-			meshPathAndFileName = Path.Combine(pathToMesh, meshFileName);
-
-			dataReloaded = false;
-		}
-
-		[TearDown]
-		public void TeardownAfterTest()
-		{
-			if (unregisterEvents != null)
-			{
-				unregisterEvents(this, null);
-			}
-		}
 
 		private bool NamedCollectionExists(string nameToLookFor)
 		{

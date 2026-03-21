@@ -1,0 +1,117 @@
+﻿/*
+Copyright (c) 2022, Lars Brubaker, John Lewin
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this
+   list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright notice,
+   this list of conditions and the following disclaimer in the documentation
+   and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+The views and conclusions contained in the software and documentation are those
+of the authors and should not be interpreted as representing official policies,
+either expressed or implied, of the FreeBSD Project.
+*/
+
+using System;
+using System.IO;
+using MatterHackers.Agg.Platform;
+using MatterHackers.MatterControl.Library;
+using MatterHackers.MatterControl.SlicerConfiguration;
+using Newtonsoft.Json;
+
+namespace MatterHackers.MatterControl
+{
+	public class PartWorkspace
+	{
+		public PartWorkspace()
+		{
+		}
+
+		[JsonIgnore]
+		public ILibraryContext LibraryView { get; set; }
+
+		public PartWorkspace(PrinterConfig printer)
+			: this(printer.Bed)
+		{
+			this.Printer = printer;
+			this.PrinterID = printer.Settings.ID;
+
+			if (this.LibraryView.ActiveContainer is WrappedLibraryContainer wrappedLibrary)
+			{
+				wrappedLibrary.ExtraContainers.Add(
+					new DynamicContainerLink(
+						printer.PrinterName,
+						StaticData.Instance.LoadIcon(Path.Combine("Library", "folder.png")),
+						StaticData.Instance.LoadIcon(Path.Combine("Library", "printer_icon.png")),
+						() => new PrinterContainer(printer))
+					{
+						IsReadOnly = true
+					});
+			}
+		}
+
+		public PartWorkspace(ISceneContext sceneContext)
+		{
+			// Create a new library context for the SaveAs view
+			this.LibraryView = new LibraryConfig()
+			{
+				ActiveContainer = new WrappedLibraryContainer(ApplicationController.Instance.Library.RootLibaryContainer)
+			};
+
+			this.SceneContext = sceneContext;
+		}
+
+		[JsonIgnore]
+		public string Name
+		{
+			get
+			{
+				var name = SceneContext.EditContext?.SourceItem?.Name;
+				if (!string.IsNullOrEmpty(name))
+				{
+					return name;
+				}
+
+				name = Printer?.Settings?.GetValue(SettingsKey.printer_name);
+				if (!string.IsNullOrEmpty(name))
+				{
+					return name;
+				}
+
+				return "New Design";
+			}
+
+			set
+			{
+#if DEBUG
+				throw new NotImplementedException();
+#endif
+			}
+		}
+
+		[JsonIgnore]
+		public ISceneContext SceneContext { get; }
+
+		public string PrinterID { get; set; }
+
+		[JsonIgnore]
+		public PrinterConfig Printer { get; }
+
+		public string ContentPath { get; set; }
+	}
+}

@@ -1,0 +1,129 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0-windows</TargetFramework>
+    <Company>MatterHackers Inc.</Company>
+    <ReleaseVersion>2.20.12</ReleaseVersion>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DefineConstants>TRACE;DEBUG;USE_OPENGL;IS_WINDOWS;IS_WINDOWS_FORMS</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DefineConstants>TRACE;USE_OPENGL;IS_WINDOWS;IS_WINDOWS_FORMS</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(SolutionFileName)'=='MatterControlAndroid.sln'">
+    <DefineConstants>$(DefineConstants);__ANDROID__</DefineConstants>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <Compile Remove="Community.CsharpSqlite\**" />
+    <Compile Remove="Launcher\**" />
+    <Compile Remove="MatterControl.OpenGL\**" />
+    <Compile Remove="MatterControl.Printing\**" />
+    <Compile Remove="MatterControl.Winforms\**" />
+    <Compile Remove="packages\**" />
+    <Compile Remove="PluginSystem\**" />
+    <Compile Remove="PrinterDriverInstaller\**" />
+    <Compile Remove="Properties\**" />
+    <Compile Remove="StaticData\**" />
+    <Compile Remove="Submodules\**" />
+    <Compile Remove="Tests\**" />
+    <Compile Remove="Tools\**" />
+    <EmbeddedResource Remove="Community.CsharpSqlite\**" />
+    <EmbeddedResource Remove="Launcher\**" />
+    <EmbeddedResource Remove="MatterControl.OpenGL\**" />
+    <EmbeddedResource Remove="MatterControl.Printing\**" />
+    <EmbeddedResource Remove="MatterControl.Winforms\**" />
+    <EmbeddedResource Remove="packages\**" />
+    <EmbeddedResource Remove="PluginSystem\**" />
+    <EmbeddedResource Remove="PrinterDriverInstaller\**" />
+    <EmbeddedResource Remove="Properties\**" />
+    <EmbeddedResource Remove="StaticData\**" />
+    <EmbeddedResource Remove="Submodules\**" />
+    <EmbeddedResource Remove="Tests\**" />
+    <EmbeddedResource Remove="Tools\**" />
+    <None Remove="Community.CsharpSqlite\**" />
+    <None Remove="Launcher\**" />
+    <None Remove="MatterControl.OpenGL\**" />
+    <None Remove="MatterControl.Printing\**" />
+    <None Remove="MatterControl.Winforms\**" />
+    <None Remove="packages\**" />
+    <None Remove="PluginSystem\**" />
+    <None Remove="PrinterDriverInstaller\**" />
+    <None Remove="Properties\**" />
+    <None Remove="StaticData\**" />
+    <None Remove="Submodules\**" />
+    <None Remove="Tests\**" />
+    <None Remove="Tools\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="DesignTools\Primitives\HexGridObject3D.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MatterControl.Common\MatterControl.Common.csproj" />
+    <ProjectReference Include="..\MatterControl.MeshOperations\MatterControl.MeshOperations.csproj" />
+    <ProjectReference Include="..\MatterControl.OpenGL\MatterControl.OpenGL.csproj" />
+    <ProjectReference Include="..\MatterControl.Printing\MatterControl.Printing.csproj" />
+    <ProjectReference Include="..\Submodules\agg-sharp\clipper_library\clipper_library.csproj" />
+    <ProjectReference Include="..\Submodules\agg-sharp\DataConverters2D\DataConverters2D.csproj" />
+    <ProjectReference Include="..\Submodules\agg-sharp\DataConverters3D\DataConverters3D.csproj" />
+    <ProjectReference Include="..\Submodules\agg-sharp\geometry3Sharp\geometry3Sharp.csproj" />
+    <ProjectReference Include="..\Submodules\agg-sharp\glfw-net\GLFW.NET\GLFW.NETStandard.csproj" />
+    <ProjectReference Include="..\Submodules\agg-sharp\Glfw\GlfwProvider.csproj" />
+    <ProjectReference Include="..\Submodules\agg-sharp\GuiAutomation\GuiAutomation.csproj" />
+    <ProjectReference Include="..\Submodules\agg-sharp\Gui\Gui.csproj" />
+    <ProjectReference Include="..\Submodules\agg-sharp\ImageProcessing\ImageProcessing.csproj" />
+    <ProjectReference Include="..\Submodules\agg-sharp\MarchingSquares\MarchingSquares.csproj" />
+    <ProjectReference Include="..\Submodules\agg-sharp\MarkdigAgg\MarkdigAgg.csproj" />
+    <ProjectReference Include="..\Submodules\agg-sharp\MeshThumbnails\MeshThumbnails\MeshThumbnails.csproj" />
+    <ProjectReference Include="..\Submodules\agg-sharp\VectorMath\VectorMath.csproj" />
+    <ProjectReference Include="..\Submodules\agg-sharp\Tesselate\Tesselate.csproj" />
+    <ProjectReference Include="..\Submodules\agg-sharp\RenderOpenGl\RenderOpenGl.csproj" />
+    <ProjectReference Include="..\Submodules\agg-sharp\PolygonMesh\PolygonMesh.csproj" />
+    <ProjectReference Include="..\Submodules\agg-sharp\Localizations\Localizations.csproj" />
+    <ProjectReference Include="..\Submodules\agg-sharp\agg\Agg.csproj" />
+    <ProjectReference Include="..\Submodules\MatterSlice\MatterSlice.csproj" />
+    <ProjectReference Include="..\Submodules\MatterSlice\MatterSliceLib\MatterSliceLib.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AngleSharp" Version="1.0.1" />
+    <PackageReference Include="CsvHelper" Version="30.0.1" />
+    <PackageReference Include="Lucene.Net" Version="4.8.0-beta00005" />
+    <PackageReference Include="Lucene.Net.Analysis.Common" Version="4.8.0-beta00005" />
+    <PackageReference Include="Lucene.Net.QueryParser" Version="4.8.0-beta00005" />
+    <PackageReference Include="Markdig" Version="0.31.0" />
+    <PackageReference Include="MathParser.org-mXparser" Version="5.2.1" />
+    <PackageReference Include="MIConvexHull" Version="1.1.19.1019" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="7.0.3" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="7.0.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="PDFsharpNetStandard2" Version="1.51.4845" />
+    <PackageReference Include="QRCoder" Version="1.4.3" />
+    <PackageReference Include="SocketIOSharp" Version="2.0.3" />
+    <PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" />
+    <PackageReference Include="System.IO.Packaging" Version="7.0.0" />
+    <PackageReference Include="System.Threading.Tasks.Extensions" Version="4.5.4" />
+    <PackageReference Include="Zeroconf" Version="3.6.11" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="libglfw.3.dylib">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Update="StyleCop.Analyzers" Version="1.1.118" />
+  </ItemGroup>
+</Project>

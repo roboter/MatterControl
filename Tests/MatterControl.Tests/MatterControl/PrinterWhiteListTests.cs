@@ -1,14 +1,7 @@
-﻿using MatterHackers.MatterControl;
-using NUnit.Framework;
-using System;
-using System.IO;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System.IO;
 using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Globalization;
-using MatterHackers.MatterControl.SlicerConfiguration;
+using MatterHackers.MatterControl.Tests.Automation;
+using NUnit.Framework;
 
 namespace MatterControl.Tests.MatterControl
 {
@@ -18,8 +11,7 @@ namespace MatterControl.Tests.MatterControl
 		[Test, Category("PrinterWhiteListTests")]
 		public void DesktopCalibrationPartsInSettings()
 		{
-
-			string settingsJsonPath = Path.GetFullPath(Path.Combine("..", "..", "..", "..", "StaticData", "OEMSettings", "Settings.json"));
+			string settingsJsonPath = Path.Combine(MatterControlUtilities.StaticDataPath, "OEMSettings", "Settings.json");
 
 			if (File.Exists(settingsJsonPath))
 			{
@@ -32,20 +24,13 @@ namespace MatterControl.Tests.MatterControl
 			}
 		}
 
-
 		[Test, Category("SamplePartsTests")]
 		public void DesktopCalibrationPartsExist()
 		{
-
-			string samplePartsPath = Path.GetFullPath(Path.Combine("..", "..", "..", "..", "StaticData", "OEMSettings", "SampleParts"));
+			string samplePartsPath = Path.Combine(MatterControlUtilities.StaticDataPath, "OEMSettings", "SampleParts");
 			string[] files = Directory.GetFiles(samplePartsPath);
-			bool hasTabletStand = files.Where(l => l.Contains("MatterControl - Stand.stl")).Any();
-			bool hasCoin = files.Where(l => l.Contains("MatterControl - Coin.stl")).Any();
-			Assert.IsTrue(hasCoin, "Expected coin file not found");
-			Assert.IsTrue(hasTabletStand, "Expected stand file not found");
-
+			bool hasPhil = files.Where(l => l.Contains("Phil A Ment.stl")).Any();
+			Assert.IsTrue(hasPhil, "Expected Phil file not found");
 		}
-
-
 	}
 }

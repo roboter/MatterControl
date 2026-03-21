@@ -1,88 +1,32 @@
-﻿using MatterHackers.Agg;
-using MatterHackers.Agg.Image;
+﻿using System.Threading;
+using System.Threading.Tasks;
 using MatterHackers.Agg.UI;
 using NUnit.Framework;
-using System;
-using System.Threading.Tasks;
-using MatterHackers.GuiAutomation;
-using MatterHackers.Agg.PlatformAbstract;
-using System.IO;
-using MatterHackers.MatterControl.CreatorPlugins;
-using MatterHackers.Agg.UI.Tests;
+using TestInvoker;
 
-
-namespace MatterHackers.MatterControl.UI
+namespace MatterHackers.MatterControl.Tests.Automation
 {
-	[TestFixture, Category("MatterControl.UI"), RunInApplicationDomain]
+	[TestFixture, Category("MatterControl.UI.Automation")]
 	public class ShowTerminalButtonClickedOpensTerminal
 	{
-		[Test, RequiresSTA, RunInApplicationDomain]
-		public void ClickingShowTerminalButtonOpensTerminal()
+		[Test, ChildProcessTest]
+		public async Task ClickingShowTerminalButtonOpensTerminal()
 		{
-			// Run a copy of MatterControl
-			Action<AutomationTesterHarness> testToRun = (AutomationTesterHarness resultsHarness) =>
+			await MatterControlUtilities.RunTest((testRunner) =>
 			{
-				AutomationRunner testRunner = new AutomationRunner(MatterControlUtilities.DefaultTestImages);
-				{
-					testRunner.ClickByName("SettingsAndControls", 5);
-					testRunner.Wait(2);
-					testRunner.ClickByName("Options Tab", 6);
+				testRunner.AddAndSelectPrinter("Airwolf 3D", "HD");
 
-					bool terminalWindowExists1 = testRunner.WaitForName("Gcode Terminal", 0);
-					resultsHarness.AddTestResult(terminalWindowExists1 == false, "Terminal Window does not exist");
+				Assert.IsFalse(testRunner.WaitForName("TerminalWidget", 0.5), "Terminal Window should not exist");
 
-					testRunner.ClickByName("Show Terminal Button", 6);
-					testRunner.Wait(1);
+				// when we start up a new session the Terminal Sidebar should not be present
+				Assert.IsFalse(testRunner.WaitForName("Terminal Sidebar", 0.5), "Terminal Sidebar should not exist");
 
-					SystemWindow containingWindow;
-					GuiWidget terminalWindow = testRunner.GetWidgetByName("Gcode Terminal", out containingWindow, 3);
-					resultsHarness.AddTestResult(terminalWindow != null, "Terminal Window exists after Show Terminal button is clicked");
-					containingWindow.CloseOnIdle();
-					testRunner.Wait(.5);
+				testRunner.SwitchToTerminalTab();
 
-					MatterControlUtilities.CloseMatterControl(testRunner);
-				}
-			};
+				Assert.IsTrue(testRunner.WaitForName("TerminalWidget"), "Terminal Window should exists after Show Terminal button is clicked");
 
-			AutomationTesterHarness testHarness = MatterControlUtilities.RunTest(testToRun);
-
-			Assert.IsTrue(testHarness.AllTestsPassed);
-			Assert.IsTrue(testHarness.TestCount == 2); // make sure we ran all our tests
+				return Task.CompletedTask;
+			});
 		}
 	}
-
-	[TestFixture, Category("MatterControl.UI"), RunInApplicationDomain]
-	public class ConfigureNotificationSettingsButtonClickedOpensNotificationWindow
-	{
-		[Test, RequiresSTA, RunInApplicationDomain, Ignore("Not Finished")]
-		//DOES NOT WORK
-		public void ClickingConfigureNotificationSettingsButtonOpensWindow()
-		{
-			// Run a copy of MatterControl
-			Action<AutomationTesterHarness> testToRun = (AutomationTesterHarness resultsHarness) =>
-			{
-				AutomationRunner testRunner = new AutomationRunner(MatterControlUtilities.DefaultTestImages);
-				{
-
-					testRunner.ClickByName("SettingsAndControls", 5);
-					testRunner.ClickByName("Options Tab", 6);
-
-					bool printNotificationsWindowExists1 = testRunner.WaitForName("Notification Options Window", 3);
-					resultsHarness.AddTestResult(printNotificationsWindowExists1 == false, "Print Notification Window does not exist");
-
-					testRunner.ClickByName("Configure Notification Settings Button", 6);
-					bool printNotificationsWindowExists2 = testRunner.WaitForName("Notification Options Window", 3);
-					resultsHarness.AddTestResult(printNotificationsWindowExists2 == true, "Print Notifications Window exists after Configure button is clicked");
-
-					MatterControlUtilities.CloseMatterControl(testRunner);
-				}
-			};
-
-			AutomationTesterHarness testHarness = MatterControlUtilities.RunTest(testToRun, "MC_Three_Queue_Items");
-
-			Assert.IsTrue(testHarness.AllTestsPassed);
-			Assert.IsTrue(testHarness.TestCount == 2); // make sure we ran all our tests
-		}
-	}
-
 }
